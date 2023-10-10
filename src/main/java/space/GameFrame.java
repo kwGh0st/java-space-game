@@ -11,8 +11,8 @@ public class GameFrame extends JFrame {
         this.setResizable(false);
         this.setTitle("Space Game");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 }
