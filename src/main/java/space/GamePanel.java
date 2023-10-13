@@ -6,7 +6,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
@@ -14,13 +13,12 @@ public class GamePanel extends JPanel implements Runnable {
     private static final int GAME_HEIGHT = (int) (SCREEN_SIZE.getHeight() * 0.75);
     private List<Ship> enemies;
     private final GamerShip gamer;
-    private static final Random random = new Random();
+    private final Image background = new ImageIcon("src\\img\\background.png").getImage();
 
     public GamePanel() {
         createEnemies();
-        gamer = new GamerShip(new ImageIcon("C:\\Users\\Karol\\Desktop\\Projekty na Github\\Space\\src\\img\\ship.png").getImage());
+        gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage());
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
-        this.setBackground(Color.black);
         this.addKeyListener(new AL(gamer));
         this.setFocusable(true);
         Thread gameThread = new Thread(this);
@@ -30,7 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void createEnemies() {
         enemies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            enemies.add(new Ship(new ImageIcon("C:\\Users\\Karol\\Desktop\\Projekty na Github\\Space\\src\\img\\enemy.png").getImage(), this));
+            enemies.add(new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), this));
         }
 
     }
@@ -40,6 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         Graphics2D g2d = (Graphics2D) g;
 
+        g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         enemies.forEach(e -> g2d.drawImage(e.getShipImage(), e.getX(), e.getY(), this));
         g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this), this);
     }
