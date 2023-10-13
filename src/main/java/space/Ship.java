@@ -1,60 +1,56 @@
 package main.java.space;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Random;
 
-public class Ship implements ActionListener {
+public class Ship {
     private final Image shipImage;
-    private int xVelocity;
+    protected int xVelocity;
     private int yVelocity;
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
+    private JPanel panel;
+    private static final Random random = new Random();
 
     public Ship(Image shipImage) {
         this.shipImage = shipImage;
-        this.xVelocity = 1;
-        this.yVelocity = 1;
+    }
+
+    public Ship(Image shipImage, JPanel panel) {
+        this.shipImage = shipImage;
+        this.panel = panel;
+        this.xVelocity = random.nextInt(5) + 1;
+        this.yVelocity = random.nextInt(5) + 1;
+        this.x = random.nextInt(GamePanel.GAME_WIDTH - shipImage.getWidth(null));
+
+    }
+
+    public void move() {
+        checkBorders();
+        x += xVelocity;
+    }
+
+    private void checkBorders() {
+        if (x >= (panel.getWidth() - this.getShipImage().getWidth(null)) || x < 0) {
+            xVelocity = -xVelocity;
+        }
     }
 
     public Image getShipImage() {
         return shipImage;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getxVelocity() {
-        return xVelocity;
-    }
-
-    public void setxVelocity(int xVelocity) {
-        this.xVelocity = xVelocity;
-    }
-
-    public int getyVelocity() {
-        return yVelocity;
-    }
-
-    public void setyVelocity(int yVelocity) {
-        this.yVelocity = yVelocity;
-    }
-
     public void setX(int x) {
         this.x = x;
+    }
+
+    public int getX() {
+        return x;
     }
 
     public int getY() {
         return y;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
 }
