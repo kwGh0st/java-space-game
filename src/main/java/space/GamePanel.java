@@ -4,13 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     static final int GAME_WIDTH = (int) (SCREEN_SIZE.getWidth() * 0.50);
-    private static final int GAME_HEIGHT = (int) (SCREEN_SIZE.getHeight() * 0.75);
+    static final int GAME_HEIGHT = (int) (SCREEN_SIZE.getHeight() * 0.75);
     private List<Ship> enemies;
     private final GamerShip gamer;
     private final Image background = new ImageIcon("src\\img\\background.png").getImage();
@@ -26,10 +27,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void createEnemies() {
+
         enemies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            enemies.add(new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), this));
+            enemies.add(new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), 4));
         }
+
+        enemies.forEach(Ship::setXVelocity);
+        enemies.forEach(Ship::setX);
 
     }
 
@@ -40,7 +45,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         enemies.forEach(e -> g2d.drawImage(e.getShipImage(), e.getX(), e.getY(), this));
+        enemies.forEach(e -> e.getRockets().forEach(r -> r.draw(g)));
         g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this), this);
+        gamer.getRockets().forEach(e -> e.draw(g));
     }
 
 
@@ -50,20 +57,26 @@ public class GamePanel extends JPanel implements Runnable {
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
+
         while (true) {
             long now = System.nanoTime();
+
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1) {
                 enemies.forEach(Ship::move);
+                enemies.forEach(e -> e.getRockets().forEach(Rocket::move));
                 gamer.move();
+                gamer.getRockets().forEach(Rocket::move);
+                gamer.getRockets().removeIf(Rocket::isOutOfScreen);
                 repaint();
                 delta--;
             }
+
         }
     }
 
-    private class AL extends KeyAdapter {
+    private static class AL extends KeyAdapter {
         private final GamerShip ship;
 
         public AL(GamerShip ship) {
