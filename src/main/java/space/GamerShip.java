@@ -4,11 +4,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GamerShip extends Ship {
-    private int speed = 5;
 
     public GamerShip(Image shipImage) {
         super(shipImage);
-        this.setX((GamePanel.GAME_WIDTH / 2) - (this.getShipImage().getWidth(null) / 2));
+        this.x = ((GamePanel.GAME_WIDTH / 2) - (this.getShipImage().getWidth(null) / 2));
     }
 
     @Override
@@ -17,7 +16,14 @@ public class GamerShip extends Ship {
         x += xVelocity;
     }
 
+    public void shoot() {
+        getRockets().add(new Rocket(x, GamePanel.GAME_HEIGHT - getShipImage().getHeight(null), 10, 10, 10, Color.blue));
+        getRockets().add(new Rocket(x + getShipImage().getWidth(null), GamePanel.GAME_HEIGHT - getShipImage().getHeight(null), 10, 10, 10, Color.blue));
+        getRockets().forEach(Rocket::move);
+    }
+
     public void keyPressed(KeyEvent e) {
+        int speed = 5;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT -> {
                 setXDirection(-speed);
@@ -27,6 +33,7 @@ public class GamerShip extends Ship {
                 setXDirection(speed);
                 move();
             }
+            case KeyEvent.VK_SPACE -> shoot();
         }
     }
 
