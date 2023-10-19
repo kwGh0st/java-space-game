@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +11,12 @@ public class GamePanel extends JPanel implements Runnable {
     private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     static final int GAME_WIDTH = (int) (SCREEN_SIZE.getWidth() * 0.50);
     static final int GAME_HEIGHT = (int) (SCREEN_SIZE.getHeight() * 0.75);
-    private List<Ship> enemies;
+    private final List<Ship> enemies;
     private final GamerShip gamer;
     private final Image background = new ImageIcon("src\\img\\background.png").getImage();
 
     public GamePanel() {
+        enemies = new ArrayList<>();
         createEnemies();
         gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage());
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
@@ -27,15 +27,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void createEnemies() {
-
-        enemies = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            enemies.add(new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), 4));
-        }
-
-        enemies.forEach(Ship::setXVelocity);
-        enemies.forEach(Ship::setX);
-
+        new EnemiesFactory(enemies);
     }
 
     public void paint(Graphics g) {
@@ -44,12 +36,13 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+
         enemies.forEach(e -> g2d.drawImage(e.getShipImage(), e.getX(), e.getY(), this));
         enemies.forEach(e -> e.getRockets().forEach(r -> r.draw(g)));
+
         g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this), this);
         gamer.getRockets().forEach(e -> e.draw(g));
     }
-
 
     @Override
     public void run() {
