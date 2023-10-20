@@ -2,12 +2,14 @@ package main.java.space;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class GamerShip extends Ship {
 
     public GamerShip(Image shipImage) {
         super(shipImage);
         this.x = ((GamePanel.GAME_WIDTH / 2) - (this.getShipImage().getWidth(null) / 2));
+        this.y = (GamePanel.GAME_HEIGHT - this.getShipImage().getHeight(null) - 5);
     }
 
     @Override
@@ -16,10 +18,9 @@ public class GamerShip extends Ship {
         x += xVelocity;
     }
 
-    public void shoot() {
-        getRockets().add(new Rocket(x, GamePanel.GAME_HEIGHT - getShipImage().getHeight(null), 10, 10, 10, Color.blue));
-        getRockets().add(new Rocket(x + getShipImage().getWidth(null), GamePanel.GAME_HEIGHT - getShipImage().getHeight(null), 10, 10, 10, Color.blue));
-        getRockets().forEach(Rocket::move);
+    public void shoot(List<Rocket> rockets) {
+        rockets.add(new Rocket(x, GamePanel.GAME_HEIGHT - getShipImage().getHeight(null) - 10, 10, 10, -10, Color.blue));
+        rockets.add(new Rocket(x + getShipImage().getWidth(null), GamePanel.GAME_HEIGHT - getShipImage().getHeight(null) - 10, 10, 10, -10, Color.blue));
     }
 
     public void keyPressed(KeyEvent e) {
@@ -33,7 +34,7 @@ public class GamerShip extends Ship {
                 setXDirection(speed);
                 move();
             }
-            case KeyEvent.VK_SPACE -> shoot();
+            case KeyEvent.VK_SPACE -> shoot(GamePanel.getRocketsOnTheScreen());
         }
     }
 

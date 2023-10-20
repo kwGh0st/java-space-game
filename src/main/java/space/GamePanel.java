@@ -4,21 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     static final int GAME_WIDTH = (int) (SCREEN_SIZE.getWidth() * 0.50);
     static final int GAME_HEIGHT = (int) (SCREEN_SIZE.getHeight() * 0.75);
-    private final List<Ship> enemies;
-    private final GamerShip gamer;
+    static final List<Ship> ships = new CopyOnWriteArrayList<>();
+    static final List<Rocket> rocketsOnTheScreen = new CopyOnWriteArrayList<>();
     private final Image background = new ImageIcon("src\\img\\background.png").getImage();
 
     public GamePanel() {
-        enemies = new ArrayList<>();
         createEnemies();
-        gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage());
+        GamerShip gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage());
+        ships.add(gamer);
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
         this.addKeyListener(new AL(gamer));
         this.setFocusable(true);
@@ -27,7 +27,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void createEnemies() {
-        new EnemiesFactory(enemies);
+        new EnemiesFactory(ships);
+    }
+
+
+    public static List<Rocket> getRocketsOnTheScreen() {
+        return rocketsOnTheScreen;
+    }
+    private void destroyShip(Ship ship) {
+        ship.isAlive = false;
+        ships.remove(ship);
     }
 
     public void paint(Graphics g) {
@@ -37,11 +46,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
 
-        enemies.forEach(e -> g2d.drawImage(e.getShipImage(),e.getX(), e.getY(), this));
-        enemies.forEach(e -> e.getRockets().forEach(r -> r.draw(g)));
-
-        g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this) - 5, this);
-        gamer.getRockets().forEach(e -> e.draw(g));
+        ships.forEach(e -> g2d.drawImage(e.getShipImage(),e.getX(), e.getY(), this));
+        rocketsOnTheScreen.forEach(r -> r.draw(g));
     }
 
     @Override
@@ -57,20 +63,24 @@ public class GamePanel extends JPanel implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1) {
-                enemies.forEach(Ship::move);
-                enemies.forEach(e -> e.getRockets().forEach(Rocket::move));
-                enemies.forEach(e -> e.getRockets().forEach(gamer::isHit));
-                enemies.forEach(e -> e.getRockets().removeIf(Rocket::isOutOfScreen));
-                gamer.move();
-                gamer.getRockets().forEach(Rocket::move);
-                gamer.getRockets().forEach(rocket -> enemies.forEach(e -> e.isHit(rocket)));
-                gamer.getRockets().removeIf(Rocket::isOutOfScreen);
+                rocketsOnTheScreen.removeIf(Rocket::isOutOfScreen);
+                ships.forEach(Ship::move);
+                rocketsOnTheScreen.forEach(Rocket::move);
+                checkHit();
                 repaint();
                 delta--;
-
-
             }
+        }
+    }
 
+    private void checkHit() {
+        for (Ship ship : ships) {
+            for (Rocket rocket : rocketsOnTheScreen) {
+                    if (ship.isHit(rocket)) {
+                        destroyShip(ship);
+                        rocketsOnTheScreen.remove(rocket);
+                    }
+            }
         }
     }
 
