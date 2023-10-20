@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Random;
 
 public class EnemiesFactory implements ActionListener {
-    private Timer timer;
-    private List<Ship> enemiesList;
+    private final List<Ship> enemiesList;
 
     public EnemiesFactory(List<Ship> enemiesList) {
         this.enemiesList = enemiesList;
-        timer = new Timer(3000, this);
+        Timer timer = new Timer(3000, this);
         timer.start();
     }
 
