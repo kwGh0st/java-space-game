@@ -37,10 +37,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
 
-        enemies.forEach(e -> g2d.drawImage(e.getShipImage(), e.getX(), e.getY(), this));
+        enemies.forEach(e -> g2d.drawImage(e.getShipImage(),e.getX(), e.getY(), this));
         enemies.forEach(e -> e.getRockets().forEach(r -> r.draw(g)));
 
-        g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this), this);
+        g2d.drawImage(gamer.getShipImage(), gamer.getX(), GAME_HEIGHT - gamer.getShipImage().getHeight(this) - 5, this);
         gamer.getRockets().forEach(e -> e.draw(g));
     }
 
@@ -59,11 +59,16 @@ public class GamePanel extends JPanel implements Runnable {
             if (delta >= 1) {
                 enemies.forEach(Ship::move);
                 enemies.forEach(e -> e.getRockets().forEach(Rocket::move));
+                enemies.forEach(e -> e.getRockets().forEach(gamer::isHit));
+                enemies.forEach(e -> e.getRockets().removeIf(Rocket::isOutOfScreen));
                 gamer.move();
                 gamer.getRockets().forEach(Rocket::move);
+                gamer.getRockets().forEach(rocket -> enemies.forEach(e -> e.isHit(rocket)));
                 gamer.getRockets().removeIf(Rocket::isOutOfScreen);
                 repaint();
                 delta--;
+
+
             }
 
         }

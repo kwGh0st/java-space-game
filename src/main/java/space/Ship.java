@@ -24,10 +24,12 @@ public class Ship implements ActionListener {
         rockets = new ArrayList<>();
     }
 
+
+
     public Ship(Image shipImage, int rocketSpeed) {
         this.shipImage = shipImage;
         rockets = new ArrayList<>();
-        this.timer = new Timer(3000, this);
+        this.timer = new Timer(2000, this);
         this.timer.start();
         this.rocketSpeed = rocketSpeed;
     }
@@ -40,7 +42,7 @@ public class Ship implements ActionListener {
         int r = random.nextInt(10);
         if (r == 5 || r == 1 || r == 3 || r == 2) {
             rockets.add(new Rocket(getX() + (getShipImage().getWidth(null) / 2),
-                    getY() + getShipImage().getHeight(null), 10, 10, Math.negateExact(rocketSpeed), Color.red));
+                    getY() + getShipImage().getHeight(null), 10, 10, rocketSpeed, Color.red));
         }
     }
 
@@ -74,6 +76,11 @@ public class Ship implements ActionListener {
 
     public int getY() {
         return y;
+    }
+
+    public void isHit(Rocket rocket) {
+        Rectangle shipBounds = new Rectangle(this.getX(), this.getY(), this.getShipImage().getWidth(null), this.getShipImage().getHeight(null));
+        if (shipBounds.intersects(rocket) || rocket.intersects(shipBounds)) System.out.println("HIT!!");
     }
 
     @Override
