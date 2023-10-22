@@ -23,7 +23,7 @@ public class EnemiesFactory implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Random random = new Random();
-        Ship enemy = new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), random.nextInt(6) + 2 );
+        Ship enemy = new Ship(new ImageIcon("src\\img\\enemy.png").getImage(), random.nextInt(6) + 4, 5);
         enemiesList.add(enemy);
         setEnemyParameters(enemy);
     }

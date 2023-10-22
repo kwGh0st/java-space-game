@@ -14,10 +14,11 @@ public class GamePanel extends JPanel implements Runnable {
     static final List<Ship> ships = new CopyOnWriteArrayList<>();
     static final List<Rocket> rocketsOnTheScreen = new CopyOnWriteArrayList<>();
     private final Image background = new ImageIcon("src\\img\\background.png").getImage();
+    private final GamerShip gamer;
 
     public GamePanel() {
         createEnemies();
-        GamerShip gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage());
+        gamer = new GamerShip(new ImageIcon("src\\img\\ship.png").getImage(), 5);
         ships.add(gamer);
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
         this.addKeyListener(new AL(gamer));
@@ -35,7 +36,7 @@ public class GamePanel extends JPanel implements Runnable {
         return rocketsOnTheScreen;
     }
     private void destroyShip(Ship ship) {
-        ship.isAlive = false;
+        ship.setAlive(false);
         ships.remove(ship);
     }
 
@@ -63,10 +64,10 @@ public class GamePanel extends JPanel implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1) {
+                checkHit();
                 rocketsOnTheScreen.removeIf(Rocket::isOutOfScreen);
                 ships.forEach(Ship::move);
                 rocketsOnTheScreen.forEach(Rocket::move);
-                checkHit();
                 repaint();
                 delta--;
             }
@@ -77,8 +78,13 @@ public class GamePanel extends JPanel implements Runnable {
         for (Ship ship : ships) {
             for (Rocket rocket : rocketsOnTheScreen) {
                     if (ship.isHit(rocket)) {
-                        destroyShip(ship);
-                        rocketsOnTheScreen.remove(rocket);
+                        if (ship == gamer && rocket.getColor() == Color.red) {
+                            rocketsOnTheScreen.remove(rocket);
+                            if (ship.hits <= 0) destroyShip(ship);
+                        } else if (ship != gamer && rocket.getColor() == Color.blue) {
+                            if (ship.hits <= 0) destroyShip(ship);
+                            rocketsOnTheScreen.remove(rocket);
+                        }
                     }
             }
         }

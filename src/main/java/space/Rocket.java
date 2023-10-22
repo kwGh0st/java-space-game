@@ -17,6 +17,10 @@ public class Rocket extends Rectangle {
         y += speed;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
     public void draw(Graphics g) {
         g.setColor(color);
         g.fillOval(x, y, width, height);

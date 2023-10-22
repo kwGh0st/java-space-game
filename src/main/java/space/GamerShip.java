@@ -6,8 +6,8 @@ import java.util.List;
 
 public class GamerShip extends Ship {
 
-    public GamerShip(Image shipImage) {
-        super(shipImage);
+    public GamerShip(Image shipImage, int hits) {
+        super(shipImage, hits);
         this.x = ((GamePanel.GAME_WIDTH / 2) - (this.getShipImage().getWidth(null) / 2));
         this.y = (GamePanel.GAME_HEIGHT - this.getShipImage().getHeight(null) - 5);
     }
